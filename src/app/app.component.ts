@@ -6,5 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  title = 'MyCoRe-Wordpress-Importer';
+  description = "Diese Anwendung importiert Blog-Posts von Wordpress zu MyCoRe!"
 }

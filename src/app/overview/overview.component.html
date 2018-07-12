@@ -1,0 +1,12 @@
+<div *ngFor="let configuration of importerConfiguration">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{configuration.id}}</h5>
+      <p class="card-text">Der import von <a href="{{configuration.part.blog}}">{{configuration.part.blog}}</a> zu <a
+        href="{{configuration.part.repository}}receive/{{configuration.part.parentObject}}">{{configuration.part.repository}}</a></p>
+      <a [routerLink]="['/compare/', configuration.id]"  class="btn btn-primary">Zum Import</a>
+    </div>
+  </div>
+
+</div>
+

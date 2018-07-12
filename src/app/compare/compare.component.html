@@ -1,0 +1,5 @@
+<ul class="list-group">
+  <li *ngFor="let post of compare.notImportedPosts" class="list-group-item">
+    <a href="{{post.url}}" target="_blank" [innerHTML]="post.title"></a> <a (click)='startImport(post)' class="btn btn-primary float-right">Importieren</a>
+  </li>
+</ul>

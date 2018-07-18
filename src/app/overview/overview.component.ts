@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CompareService, ImporterConfigurationPart} from "../compare.service";
+import {ConfigService, ImporterConfigurationPart} from "../config.service";
 
 @Component({
   selector: 'app-overview',
@@ -10,8 +10,8 @@ export class OverviewComponent implements OnInit {
 
   private importerConfiguration: [{ id: string, part: ImporterConfigurationPart }];
 
-  constructor(private compareService: CompareService) {
-    this.compareService.getServiceConfig().subscribe(configuration => {
+  constructor(private configService: ConfigService) {
+    this.configService.getServiceConfig().subscribe(configuration => {
       console.log(configuration);
       this.importerConfiguration = <any>[];
       for (let id in configuration) {

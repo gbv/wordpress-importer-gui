@@ -1,7 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {CompareService, ImporterCompare, PostInfo} from "../compare.service";
+import {CompareService } from "../compare.service";
 import {Subscription} from "rxjs/internal/Subscription";
+import {ImporterCompare, PostInfo} from "../config.service";
+import {ImportService} from "../import.service";
 
 @Component({
   selector: 'app-compare',
@@ -10,7 +12,7 @@ import {Subscription} from "rxjs/internal/Subscription";
 })
 export class CompareComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private compareService:CompareService) {
+  constructor(private route: ActivatedRoute, private compareService:CompareService, private importService:ImportService) {
     this.route.params.subscribe(params => this.displayCompare(params["id"]));
   }
 
@@ -33,6 +35,8 @@ export class CompareComponent implements OnInit {
   }
 
   startImport(post:PostInfo) {
+    this.importService.importPost(post.id, this.currentShowingID);
+
     console.log("Importing " + post.title);
   }
 }

@@ -1,0 +1,19 @@
+<div class="card" *ngIf="!auth.token">
+  <form [formGroup]="login">
+    <div class="card-body">
+      <div class="card-title">
+        Geben Sie ihre MyCoRe-Login-Daten ein um Objekte zu Importieren!
+      </div>
+      <div class="form-group">
+        <label for="user-name-input">Benutzername</label>
+        <input type="text" class="form-control" id="user-name-input" placeholder="Benutzername" formControlName="user">
+      </div>
+      <div class="form-group">
+        <label for="password-input">Passwort</label>
+        <input id="password-input" type="password" class="form-control" placeholder="Passwort"
+               formControlName="password"/>
+      </div>
+      <button type="submit" (click)='getToken()' class="btn btn-primary" style="width: 100%">Login</button>
+    </div>
+  </form>
+</div>

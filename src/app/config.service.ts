@@ -23,6 +23,7 @@ export interface PostInfo {
   title: string;
   id: number;
   url: string;
+  importedURL?: string;
 }
 
 export interface ImporterConfiguration {

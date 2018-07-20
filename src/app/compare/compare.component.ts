@@ -2,7 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {CompareService } from "../compare.service";
 import {Subscription} from "rxjs/internal/Subscription";
-import {ImporterCompare, PostInfo} from "../config.service";
+import {ConfigService, ImporterCompare, PostInfo} from "../config.service";
+import {ConvertService} from "../convert.service";
 import {ImportService} from "../import.service";
 
 @Component({
@@ -12,7 +13,11 @@ import {ImportService} from "../import.service";
 })
 export class CompareComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private compareService:CompareService, private importService:ImportService) {
+  constructor(private route: ActivatedRoute,
+              private compareService: CompareService,
+              private convertSerivce: ConvertService,
+              private importService: ImportService,
+              private configService: ConfigService) {
     this.route.params.subscribe(params => this.displayCompare(params["id"]));
   }
 
@@ -23,6 +28,7 @@ export class CompareComponent implements OnInit {
   private compare: ImporterCompare = { notImportedPosts: (<PostInfo[]>[])};
   private currentSubscription: Subscription = null;
   private currentShowingID:string;
+  private authToken: { token: string } = {token : null};
 
   displayCompare(id: string) {
     if(this.currentSubscription!=null){
@@ -34,9 +40,17 @@ export class CompareComponent implements OnInit {
     });
   }
 
-  startImport(post:PostInfo) {
-    this.importService.importPost(post.id, this.currentShowingID);
-
-    console.log("Importing " + post.title);
+  async startImport(post: PostInfo) {
+    if ("token" in this.authToken) {
+      try {
+        const convertedDocument = await this.convertSerivce.convertPost(post.id, this.currentShowingID);
+        console.log(convertedDocument);
+        const config = await this.configService.getServiceConfig().toPromise();
+        const result = await this.importService.importDocument(config[ this.currentShowingID ].repository, convertedDocument, this.authToken.token);
+        post.importedURL = config[ this.currentShowingID ].repository + "receive" + result.substr(result.lastIndexOf("/"));
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
 }

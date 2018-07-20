@@ -6,6 +6,8 @@ import {OverviewComponent} from './overview/overview.component';
 import {HttpClientModule} from "@angular/common/http";
 import {RouterModule, Routes} from "@angular/router";
 import {CompareComponent} from './compare/compare.component';
+import { LoginComponent } from './login/login.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 const routes: Routes = [
   {path: '', redirectTo: 'overview', pathMatch: 'full'},
@@ -17,10 +19,11 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     OverviewComponent,
-    CompareComponent
+    CompareComponent,
+    LoginComponent
   ],
   imports: [
-    BrowserModule, HttpClientModule, RouterModule.forRoot(routes, {useHash: true})
+    BrowserModule, HttpClientModule, RouterModule.forRoot(routes, {useHash: true}), FormsModule, ReactiveFormsModule
 
   ],
   providers: [],

@@ -1,5 +1,9 @@
-<ul class="list-group">
+<app-login [configId]="currentShowingID" [auth]="authToken"> </app-login>
+<ul class="list-group" style="margin-top: 10px">
   <li *ngFor="let post of compare.notImportedPosts" class="list-group-item">
-    <a href="{{post.url}}" target="_blank" [innerHTML]="post.title"></a> <a (click)='startImport(post)' class="btn btn-primary float-right">Importieren</a>
+    <a href="{{post.url}}" target="_blank" [innerHTML]="post.title"></a>
+
+    <button *ngIf="authToken.token && !post.importedURL" (click)='startImport(post)' class="btn btn-primary float-right">Importieren</button>
+    <a *ngIf="post.importedURL" href="{{post.importedURL}}" class="float-right">{{post.importedURL}}</a>
   </li>
 </ul>

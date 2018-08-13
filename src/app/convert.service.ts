@@ -30,7 +30,17 @@ export class ConvertService {
   }
 
   public async convertPost(postId: number, configId: string): Promise<Blob> {
-    const resp =  await this.http.get(`${environment.endpoint}convert/${configId}/${postId}`, {responseType:"blob"}).toPromise();
+    const resp = await this.http.get(`${environment.endpoint}convert/mods/${configId}/${postId}`, {responseType : "blob"}).toPromise();
+    return resp;
+  }
+
+  public async getDerivate(postId: number, configID: string, parentID: string): Promise<Blob> {
+    const resp = await this.http.get(`${environment.endpoint}convert/derivate/${configID}/${postId}`, {responseType : "blob"}).toPromise();
+    return resp;
+  }
+
+  public async convertPDF(postId: number, configId: string): Promise<Blob> {
+    const resp = await this.http.get(`${environment.endpoint}convert/pdf/${configId}/${postId}`, {responseType : "blob"}).toPromise();
     return resp;
   }
 }

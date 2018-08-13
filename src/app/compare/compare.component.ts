@@ -47,7 +47,13 @@ export class CompareComponent implements OnInit {
         console.log(convertedDocument);
         const config = await this.configService.getServiceConfig().toPromise();
         const result = await this.importService.importDocument(config[ this.currentShowingID ].repository, convertedDocument, this.authToken.token);
-        post.importedURL = config[ this.currentShowingID ].repository + "receive" + result.substr(result.lastIndexOf("/"));
+        const parentID = result.substr(result.lastIndexOf("/"));
+        post.importedURL = config[ this.currentShowingID ].repository + "receive" + parentID;
+        const derivateBlob = this.convertSerivce.getDerivate(post.id, this.currentShowingID, parentID);
+        const pdfBlob = this.convertSerivce.convertPDF(post.id, this.currentShowingID);
+
+
+
       } catch (e) {
         console.error(e);
       }

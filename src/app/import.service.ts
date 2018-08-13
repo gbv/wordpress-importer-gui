@@ -25,4 +25,8 @@ export class ImportService {
     }).toPromise();
     return response.headers.get("Location");
   }
+
+  async importDerivate(repository:string, derivate: Blob, authorization:string) : Promise<string> {
+
+  }
 }

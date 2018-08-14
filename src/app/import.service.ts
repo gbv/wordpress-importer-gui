@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpResponse} from "@angular/common/http";
+import {Md5Service} from "./md5.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImportService {
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private md5: Md5Service) {
 
   }
 
@@ -23,10 +24,51 @@ export class ImportService {
       },
       observe : 'response', responseType : 'text'
     }).toPromise();
+    const location = response.headers.get("Location");
+    console.log("Location " + location);
+    return location;
+  }
+
+  async importDerivate(repository: string, parentID: string, authorization: string): Promise<string> {
+    const formData = new FormData();
+
+    formData.set("label", "data object from " + parentID);
+
+    const requestURL = repository + ImportService.OBJECTS_PATH + "/" + parentID + "/derivates";
+    const response = await this.http.post(requestURL, formData, {
+      headers: {
+        "Authorization": authorization,
+        "Accept": "text/xml"
+      },
+      observe: 'response', responseType: 'text'
+    }).toPromise();
+
     return response.headers.get("Location");
   }
 
-  async importDerivate(repository:string, derivate: Blob, authorization:string) : Promise<string> {
 
+  async importPDF(repository: string, objectID: string, derivateID: string,fileName:string, pdf: Blob, authorization: string) {
+    const formData = new FormData();
+
+    formData.set("file", pdf);
+    formData.set("path", "/" + fileName);
+    formData.set("maindoc", "true");
+    formData.set("unzip", "false");
+    formData.set("size", pdf.size.toString(10));
+
+    const md5 = await this.md5.md5File(pdf);
+    formData.set("md5", md5);
+
+
+    const requestURL = repository + ImportService.OBJECTS_PATH + "/" + objectID + "/derivates/" + derivateID + "/contents/";
+    const response = await this.http.post(requestURL, formData, {
+      headers: {
+        "Authorization": authorization,
+        "Accept": "text/xml"
+      },
+      observe: 'response', responseType: 'text'
+    }).toPromise();
+
+    return response.headers.get("Location");
   }
 }

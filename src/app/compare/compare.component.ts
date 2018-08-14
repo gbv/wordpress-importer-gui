@@ -46,14 +46,18 @@ export class CompareComponent implements OnInit {
         const convertedDocument = await this.convertSerivce.convertPost(post.id, this.currentShowingID);
         console.log(convertedDocument);
         const config = await this.configService.getServiceConfig().toPromise();
-        const result = await this.importService.importDocument(config[ this.currentShowingID ].repository, convertedDocument, this.authToken.token);
-        const parentID = result.substr(result.lastIndexOf("/"));
-        post.importedURL = config[ this.currentShowingID ].repository + "receive" + parentID;
-        const derivateBlob = this.convertSerivce.getDerivate(post.id, this.currentShowingID, parentID);
-        const pdfBlob = this.convertSerivce.convertPDF(post.id, this.currentShowingID);
+        const repositoryURL = config[this.currentShowingID].repository;
+        const objectAPIURL = await this.importService.importDocument(repositoryURL, convertedDocument, this.authToken.token);
+        const objectID = objectAPIURL.substr(objectAPIURL.lastIndexOf("/")+1);
 
+        post.importedURL = repositoryURL + "receive/" + objectID;
 
+        const pdf = await this.convertSerivce.convertPDF(post.id, this.currentShowingID);
+        const derivateAPIURL = await this.importService.importDerivate(repositoryURL, objectID, this.authToken.token);
+        const derivateID = derivateAPIURL.substr(derivateAPIURL.lastIndexOf("/")+1);
 
+        await this.importService.importPDF(repositoryURL, objectID, derivateID, pdf.fileName, pdf.blob, this.authToken.token);
+        console.log("Success!");
       } catch (e) {
         console.error(e);
       }

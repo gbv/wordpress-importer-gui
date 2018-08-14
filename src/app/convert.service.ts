@@ -34,13 +34,15 @@ export class ConvertService {
     return resp;
   }
 
-  public async getDerivate(postId: number, configID: string, parentID: string): Promise<Blob> {
-    const resp = await this.http.get(`${environment.endpoint}convert/derivate/${configID}/${postId}`, {responseType : "blob"}).toPromise();
-    return resp;
+  public async convertPDF(postId: number, configId: string): Promise<{ fileName: string, blob: Blob }> {
+    const resp = await this.http.get(`${environment.endpoint}convert/pdf/${configId}/${postId}`, {observe: 'response', responseType: 'blob'}).toPromise();
+    return {fileName: this.getFileNameFromResponseContentDisposition(resp), blob: resp.body};
   }
 
-  public async convertPDF(postId: number, configId: string): Promise<Blob> {
-    const resp = await this.http.get(`${environment.endpoint}convert/pdf/${configId}/${postId}`, {responseType : "blob"}).toPromise();
-    return resp;
-  }
+  getFileNameFromResponseContentDisposition(res: HttpResponse<Blob>) {
+    const contentDisposition = res.headers.get('Content-Disposition') || '';
+    const matches = /filename="([^;]+)"/ig.exec(contentDisposition);
+    const fileName = ((matches||[null])[1] || 'untitled').trim();
+    return fileName;
+  };
 }

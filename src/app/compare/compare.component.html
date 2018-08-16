@@ -1,4 +1,7 @@
-<app-login [configId]="currentShowingID" [auth]="authToken"> </app-login>
+<div class="alert alert-danger error" *ngIf="error.error">
+  <strong>Error! </strong> <span>{{error.message}}</span>
+</div>
+<app-login [configId]="currentShowingID" [auth]="authToken" [error]="error"> </app-login>
 <ul class="list-group" style="margin-top: 10px">
   <li *ngFor="let post of compare.notImportedPosts" class="list-group-item">
     <a href="{{post.url}}" target="_blank" [innerHTML]="post.title"></a>

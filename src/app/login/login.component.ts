@@ -19,10 +19,10 @@ export class LoginComponent implements OnInit {
   private login: FormGroup;
   private userName: FormControl;
   private password: FormControl;
-  private error: boolean;
 
   @Input('configId') private configId: string;
   @Input('auth') private auth: {token:string};
+  @Input('error') private error: {error:boolean;message:string};
 
   ngOnInit() {
     this.userName = new FormControl();
@@ -44,12 +44,15 @@ export class LoginComponent implements OnInit {
       const authResponse = await this.http.get<AuthResponse>(repository + LoginComponent.LOGIN_PATH, options).toPromise();
       if(authResponse.login_success){
         this.auth.token = authResponse.token_type + " " + authResponse.access_token;
-        this.error = false;
+        this.error.error = false;
       } else {
-        this.error = true;
+        this.error.error = true;
       }
     } catch (e) {
-      console.log(e);
+      this.error.error = true;
+      if ("message" in e) {
+        this.error.message = e.message;
+      }
       this.auth = null;
     }
   }

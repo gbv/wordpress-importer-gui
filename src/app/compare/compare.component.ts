@@ -5,6 +5,7 @@ import {Subscription} from "rxjs/internal/Subscription";
 import {ConfigService, ImporterCompare, PostInfo} from "../config.service";
 import {ConvertService} from "../convert.service";
 import {ImportService} from "../import.service";
+import {Observable} from "rxjs/internal/Observable";
 
 @Component({
   selector: 'app-compare',
@@ -29,6 +30,7 @@ export class CompareComponent implements OnInit {
   private currentSubscription: Subscription = null;
   private currentShowingID:string;
   private authToken: { token: string } = {token : null};
+  private error = {error : false, message : ""};
 
   displayCompare(id: string) {
     if(this.currentSubscription!=null){
@@ -57,8 +59,11 @@ export class CompareComponent implements OnInit {
         const derivateID = derivateAPIURL.substr(derivateAPIURL.lastIndexOf("/")+1);
 
         await this.importService.importPDF(repositoryURL, objectID, derivateID, pdf.fileName, pdf.blob, this.authToken.token);
-        console.log("Success!");
       } catch (e) {
+        this.error.error = true;
+        if ("message" in e) {
+          this.error.message = e.message;
+        }
         console.error(e);
       }
     }

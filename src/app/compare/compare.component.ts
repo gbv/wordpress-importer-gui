@@ -26,11 +26,11 @@ export class CompareComponent implements OnInit {
   ngOnInit() {
   }
 
-  private compare: ImporterCompare = { notImportedPosts: (<PostInfo[]>[])};
   private currentSubscription: Subscription = null;
-  private currentShowingID:string;
-  private authToken: { token: string } = {token : null};
-  private error = {error : false, message : ""};
+  public compare: ImporterCompare = { notImportedPosts: (<PostInfo[]>[])};
+  public authToken: { token: string } = {token : null};
+  public currentShowingID:string;
+  public error = {error : false, message : ""};
 
   displayCompare(id: string) {
     if(this.currentSubscription!=null){

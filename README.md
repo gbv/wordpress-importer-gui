@@ -13,6 +13,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+The Parameter --base-href should be used to set the base href e.G. if App is running under `https://reposis-test.gbv.de/IntR2Dok/wpimport/`, then base-href needs to be `/IntR2Dok/wpimport/`
 
 ## Running unit tests
 

@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
   private password: FormControl;
 
   @Input('configId') private configId: string;
-  @Input('auth') private auth: {token:string};
+  @Input('auth') public auth: {token:string};
   @Input('error') private error: {error:boolean;message:string};
 
   ngOnInit() {

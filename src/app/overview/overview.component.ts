@@ -8,7 +8,7 @@ import {ConfigService, ImporterConfigurationPart} from "../config.service";
 })
 export class OverviewComponent implements OnInit {
 
-  private importerConfiguration: [{ id: string, part: ImporterConfigurationPart }];
+  public importerConfiguration: [{ id: string, part: ImporterConfigurationPart }];
 
   constructor(private configService: ConfigService) {
     this.configService.getServiceConfig().subscribe(configuration => {

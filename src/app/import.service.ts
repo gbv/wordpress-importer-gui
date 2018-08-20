@@ -46,6 +46,19 @@ export class ImportService {
     return response.headers.get("Location");
   }
 
+  async getDerivateID(repository: string, objectID:string, authorization: string){
+    const requestURL = repository + ImportService.OBJECTS_PATH + "/" + objectID + "/derivates/";
+
+    const derobjects:string = await this.http.get(requestURL, {     headers: {
+        "Authorization": authorization,
+        "Accept": "text/xml"
+      },  responseType: 'text'}).toPromise();
+
+    console.log(derobjects);
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(derobjects, "text/xml");
+    return xmlDoc.firstElementChild.firstElementChild.getAttribute("ID");
+  }
 
   async importPDF(repository: string, objectID: string, derivateID: string,fileName:string, pdf: Blob, authorization: string) {
     const formData = new FormData();

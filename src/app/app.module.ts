@@ -12,7 +12,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 const routes: Routes = [
   {path: '', redirectTo: 'overview', pathMatch: 'full'},
   {path: 'overview', component: OverviewComponent},
-  {path: 'compare/:id', component: CompareComponent}
+  {path: 'compare/:id/:mode', component: CompareComponent}
 ];
 
 @NgModule({

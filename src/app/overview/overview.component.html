@@ -4,7 +4,8 @@
       <h5 class="card-title">{{configuration.id}}</h5>
       <p class="card-text">Der import von <a href="{{configuration.part.blog}}">{{configuration.part.blog}}</a> zu <a
         href="{{configuration.part.repository}}receive/{{configuration.part.parentObject}}">{{configuration.part.repository}}</a></p>
-      <a [routerLink]="['/compare/', configuration.id]"  class="btn btn-primary">Zum Import</a>
+      <a [routerLink]="['/compare/', configuration.id, 'import']"  class="btn btn-primary">Import</a>
+      <a [routerLink]="['/compare/', configuration.id, 'update']"  class="btn btn-primary">PDF Update</a>
     </div>
   </div>
 

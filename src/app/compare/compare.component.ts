@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {CompareService } from "../compare.service";
 import {Subscription} from "rxjs/internal/Subscription";
-import {ConfigService, ImporterCompare, PostInfo} from "../config.service";
+import {ConfigService, ImporterCompare, ImporterConfigurationPart, PostInfo} from "../config.service";
 import {ConvertService} from "../convert.service";
 import {ImportService} from "../import.service";
 import {Observable} from "rxjs/internal/Observable";
@@ -14,31 +14,38 @@ import {Observable} from "rxjs/internal/Observable";
 })
 export class CompareComponent implements OnInit {
 
+  public mode: string;
+
+
+  ngOnInit() {
+  }
+  private compare: ImporterCompare = {notImportedPosts: (<PostInfo[]>[]), mycoreIDPostMap: {}};
+  private postMyCoReKeys = [];
+  private currentSubscription: Subscription = null;
+  private currentShowingID: string;
+  private authToken: { token: string } = {token: null};
+  private config: ImporterConfigurationPart = null;
+
   constructor(private route: ActivatedRoute,
               private compareService: CompareService,
               private convertSerivce: ConvertService,
               private importService: ImportService,
               private configService: ConfigService) {
-    this.route.params.subscribe(params => this.displayCompare(params["id"]));
+    this.route.params.subscribe(params => this.displayCompare(params["id"], params["mode"]));
   }
-
-
-  ngOnInit() {
-  }
-
-  private currentSubscription: Subscription = null;
-  public compare: ImporterCompare = { notImportedPosts: (<PostInfo[]>[])};
-  public authToken: { token: string } = {token : null};
-  public currentShowingID:string;
   public error = {error : false, message : ""};
 
-  displayCompare(id: string) {
+  async displayCompare(id: string, mode: string) {
     if(this.currentSubscription!=null){
       this.currentSubscription.unsubscribe();
     }
     this.currentShowingID = id;
+    this.config = (await this.configService.getServiceConfig().toPromise())[this.currentShowingID];
+
+    this.mode = mode;
     this.currentSubscription = this.compareService.getServiceCompare(id).subscribe((compare)=>{
       this.compare = compare;
+      this.postMyCoReKeys = Object.keys(compare.mycoreIDPostMap).map(id => [id, compare.mycoreIDPostMap[id]]);
     });
   }
 
@@ -66,6 +73,16 @@ export class CompareComponent implements OnInit {
         }
         console.error(e);
       }
+    }
+  }
+
+  async updatePDF(post: PostInfo, objectID: string) {
+    if ("token" in this.authToken) {
+      const config = await this.configService.getServiceConfig().toPromise();
+      const repositoryURL = config[this.currentShowingID].repository;
+      const pdf = await this.convertSerivce.convertPDF(post.id, this.currentShowingID);
+      const derivateID = await this.importService.getDerivateID(repositoryURL, objectID, this.authToken.token);
+      await this.importService.importPDF(repositoryURL, objectID, derivateID, pdf.fileName, pdf.blob, this.authToken.token);
     }
   }
 }

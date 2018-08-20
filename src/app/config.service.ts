@@ -17,6 +17,7 @@ export class ConfigService {
 
 export interface ImporterCompare {
   notImportedPosts: PostInfo[];
+  mycoreIDPostMap:{ [mycoreID:string]:PostInfo};
 }
 
 export interface PostInfo {

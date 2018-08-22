@@ -2,6 +2,7 @@ import {Component, Input, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {ConfigService, ImporterConfiguration} from "../config.service";
 import {HttpClient} from "@angular/common/http";
+import {Color, MessageService} from "../message.service";
 
 @Component({
   selector : 'app-login',
@@ -10,7 +11,9 @@ import {HttpClient} from "@angular/common/http";
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private configService: ConfigService, private http: HttpClient) {
+  constructor(private configService: ConfigService,
+              private http: HttpClient,
+              private messageService: MessageService) {
 
   }
 
@@ -22,7 +25,6 @@ export class LoginComponent implements OnInit {
 
   @Input('configId') private configId: string;
   @Input('auth') public auth: {token:string};
-  @Input('error') private error: {error:boolean;message:string};
 
   ngOnInit() {
     this.userName = new FormControl();
@@ -44,14 +46,18 @@ export class LoginComponent implements OnInit {
       const authResponse = await this.http.get<AuthResponse>(repository + LoginComponent.LOGIN_PATH, options).toPromise();
       if(authResponse.login_success){
         this.auth.token = authResponse.token_type + " " + authResponse.access_token;
-        this.error.error = false;
       } else {
-        this.error.error = true;
+        this.messageService.push({
+          title: "Login Fehlgeschlagen!",
+          message: "Login Fehlgeschlagen. Überprüfen Sie ihren Benutzernamen und Passwort!",
+          color: Color.warning
+        })
       }
     } catch (e) {
-      this.error.error = true;
       if ("message" in e) {
-        this.error.message = e.message;
+        this.messageService.push({message: e.message, title: "Fehler!", color: Color.danger});
+      } else {
+        this.messageService.push({message: e.toString(), title: "Fehler!", color: Color.danger});
       }
       this.auth = null;
     }

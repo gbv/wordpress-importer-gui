@@ -1,7 +1,15 @@
-<div class="alert alert-danger error" *ngIf="error.error">
-  <strong>Error! </strong> <span>{{error.message}}</span>
+<app-login [configId]="currentShowingID" [auth]="authToken"></app-login>
+<div class="card">
+  <form [formGroup]="filter">
+    <div class="card-body">
+      <div class="form-group">
+        <label for="name-input">Suche</label>
+        <input type="text" class="form-control" id="name-input" placeholder="Flüchtlingspolitik" formControlName="name"
+               (keyup)="filterPosts()">
+      </div>
+    </div>
+  </form>
 </div>
-<app-login [configId]="currentShowingID" [auth]="authToken" [error]="error"> </app-login>
 <ul *ngIf="mode=='update'" class="list-group" style="margin-top: 10px">
   <li *ngFor="let arr of postMyCoReKeys"  class="list-group-item">
     <a href="{{arr[1].url}}" [innerHTML]="arr[1].title"></a> ->
@@ -10,7 +18,7 @@
   </li>
 </ul>
 <ul *ngIf="mode=='import'" class="list-group" style="margin-top: 10px">
-  <li *ngFor="let post of compare.notImportedPosts" class="list-group-item">
+  <li *ngFor="let post of this.notImported" class="list-group-item">
     <a href="{{post.url}}" target="_blank" [innerHTML]="post.title"></a>
 
     <button *ngIf="authToken.token && !post.importedURL" (click)='startImport(post)' class="btn btn-primary float-right">Importieren</button>

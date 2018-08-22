@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {CompareService } from "../compare.service";
-import {Subscription} from "rxjs/internal/Subscription";
+import {CompareService} from "../compare.service";
 import {ConfigService, ImporterCompare, ImporterConfigurationPart, PostInfo} from "../config.service";
 import {ConvertService} from "../convert.service";
 import {ImportService} from "../import.service";
-import {Observable} from "rxjs/internal/Observable";
+import {Color, MessageService} from "../message.service";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-compare',
@@ -17,35 +17,44 @@ export class CompareComponent implements OnInit {
   public mode: string;
 
 
-  ngOnInit() {
-  }
   private compare: ImporterCompare = {notImportedPosts: (<PostInfo[]>[]), mycoreIDPostMap: {}};
-  private postMyCoReKeys = [];
-  private currentSubscription: Subscription = null;
+
   currentShowingID: string;
   authToken: { token: string } = {token: null};
   private config: ImporterConfigurationPart = null;
+
+  filter: FormGroup;
+  private name: FormControl;
+
+  private notImported: PostInfo[];
+  private postMyCoReKeys = [];
+
 
   constructor(private route: ActivatedRoute,
               private compareService: CompareService,
               private convertSerivce: ConvertService,
               private importService: ImportService,
-              private configService: ConfigService) {
+              private configService: ConfigService,
+              private messageService: MessageService) {
     this.route.params.subscribe(params => this.displayCompare(params["id"], params["mode"]));
   }
-  public error = {error : false, message : ""};
+
+  ngOnInit() {
+    this.name = new FormControl();
+
+    this.filter = new FormGroup({
+      name: this.name
+    });
+  }
 
   async displayCompare(id: string, mode: string) {
-    if(this.currentSubscription!=null){
-      this.currentSubscription.unsubscribe();
-    }
     this.currentShowingID = id;
     this.config = (await this.configService.getServiceConfig().toPromise())[this.currentShowingID];
-
     this.mode = mode;
-    this.currentSubscription = this.compareService.getServiceCompare(id).subscribe((compare)=>{
+
+    this.compareService.getServiceCompare(id).subscribe((compare) => {
       this.compare = compare;
-      this.postMyCoReKeys = Object.keys(compare.mycoreIDPostMap).map(id => [id, compare.mycoreIDPostMap[id]]);
+      this.filterPosts();
     });
   }
 
@@ -66,23 +75,61 @@ export class CompareComponent implements OnInit {
         const derivateID = derivateAPIURL.substr(derivateAPIURL.lastIndexOf("/")+1);
 
         await this.importService.importPDF(repositoryURL, objectID, derivateID, pdf.fileName, pdf.blob, this.authToken.token);
+        this.messageService.push({
+          message: "Der Blog-Eintrag wurde Erfolgreich importiert!",
+          title: "Import Erfolgreich!",
+          color: Color.success
+        });
       } catch (e) {
-        this.error.error = true;
         if ("message" in e) {
-          this.error.message = e.message;
+          this.messageService.push({message: e.message, title: "Fehler!", color: Color.danger});
+        } else {
+          this.messageService.push({message: e.toString(), title: "Fehler!", color: Color.danger});
         }
-        console.error(e);
       }
     }
   }
 
   async updatePDF(post: PostInfo, objectID: string) {
     if ("token" in this.authToken) {
-      const config = await this.configService.getServiceConfig().toPromise();
-      const repositoryURL = config[this.currentShowingID].repository;
-      const pdf = await this.convertSerivce.convertPDF(post.id, this.currentShowingID);
-      const derivateID = await this.importService.getDerivateID(repositoryURL, objectID, this.authToken.token);
-      await this.importService.importPDF(repositoryURL, objectID, derivateID, pdf.fileName, pdf.blob, this.authToken.token);
+      try {
+        const config = await this.configService.getServiceConfig().toPromise();
+        const repositoryURL = config[this.currentShowingID].repository;
+        const pdf = await this.convertSerivce.convertPDF(post.id, this.currentShowingID);
+        const derivateID = await this.importService.getDerivateID(repositoryURL, objectID, this.authToken.token);
+        await this.importService.importPDF(repositoryURL, objectID, derivateID, pdf.fileName, pdf.blob, this.authToken.token);
+        this.messageService.push({
+          message: "Das PDF wurde Erfolgreich geupdated!",
+          title: "Update Erfolgreich!",
+          color: Color.success
+        });
+      } catch (e) {
+        if ("message" in e) {
+          this.messageService.push({message: e.message, title: "Fehler!", color: Color.danger});
+        } else {
+          this.messageService.push({message: e.toString(), title: "Fehler!", color: Color.danger});
+        }
+      }
+    }
+  }
+
+  filterPosts() {
+    const value = <string>this.name.value;
+    if (value != null && value.trim().length > 0) {
+      const titleFilter = (post) => post.title.toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) != -1;
+      this.notImported = this.compare.notImportedPosts.filter(titleFilter);
+      this.postMyCoReKeys = Object.keys(this.compare.mycoreIDPostMap)
+        .sort()
+        .reverse()
+        .filter(id => titleFilter(this.compare.mycoreIDPostMap[id]))
+        .map(id => [id, this.compare.mycoreIDPostMap[id]]);
+    } else {
+      this.notImported = this.compare.notImportedPosts;
+      this.postMyCoReKeys = Object.keys(this.compare.mycoreIDPostMap)
+        .sort()
+        .reverse()
+        .map(id => [id, this.compare.mycoreIDPostMap[id]]);
+
     }
   }
 }

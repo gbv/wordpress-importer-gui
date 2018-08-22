@@ -8,6 +8,8 @@ import {RouterModule, Routes} from "@angular/router";
 import {CompareComponent} from './compare/compare.component';
 import { LoginComponent } from './login/login.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {MessageComponent} from './message/message.component';
+import {ModalModule} from 'ngx-bootstrap';
 
 const routes: Routes = [
   {path: '', redirectTo: 'overview', pathMatch: 'full'},
@@ -20,10 +22,11 @@ const routes: Routes = [
     AppComponent,
     OverviewComponent,
     CompareComponent,
-    LoginComponent
+    LoginComponent,
+    MessageComponent
   ],
   imports: [
-    BrowserModule, HttpClientModule, RouterModule.forRoot(routes, {useHash: true}), FormsModule, ReactiveFormsModule
+    BrowserModule, HttpClientModule, RouterModule.forRoot(routes, {useHash: true}), ModalModule.forRoot(), FormsModule, ReactiveFormsModule
 
   ],
   providers: [],

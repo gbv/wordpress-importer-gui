@@ -22,8 +22,8 @@ export class CompareComponent implements OnInit {
   private compare: ImporterCompare = {notImportedPosts: (<PostInfo[]>[]), mycoreIDPostMap: {}};
   private postMyCoReKeys = [];
   private currentSubscription: Subscription = null;
-  private currentShowingID: string;
-  private authToken: { token: string } = {token: null};
+  currentShowingID: string;
+  authToken: { token: string } = {token: null};
   private config: ImporterConfigurationPart = null;
 
   constructor(private route: ActivatedRoute,

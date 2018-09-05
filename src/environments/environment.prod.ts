@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  endpoint: "https://reposis-test.gbv.de/WPImport/api/"
+  endpoint: "https://intr2dok.vifa-recht.de/wpimport/api/"
 };

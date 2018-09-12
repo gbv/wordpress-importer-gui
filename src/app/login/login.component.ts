@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   }
 
   private static LOGIN_PATH = "api/v1/auth/login";
-  private static TOKEN_VALIDITY_TIME = 1024 * 60 * 30;
+  private static TOKEN_VALIDITY_TIME = 1024 * 60 * 10;
   private static KEY_TOKEN = "token";
   private static KEY_TOKEN_EXPIRE = "tokenExpire";
 

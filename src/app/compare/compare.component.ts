@@ -6,6 +6,7 @@ import {ConvertService} from "../convert.service";
 import {ImportService} from "../import.service";
 import {Color, MessageService} from "../message.service";
 import {FormControl, FormGroup} from "@angular/forms";
+import {NgxSpinnerService} from "ngx-spinner";
 
 @Component({
   selector: 'app-compare',
@@ -35,7 +36,8 @@ export class CompareComponent implements OnInit {
               private convertSerivce: ConvertService,
               private importService: ImportService,
               private configService: ConfigService,
-              private messageService: MessageService) {
+              private messageService: MessageService,
+              private spinnerService: NgxSpinnerService) {
     this.route.params.subscribe(params => this.displayCompare(params["id"], params["mode"]));
   }
 
@@ -48,19 +50,21 @@ export class CompareComponent implements OnInit {
   }
 
   async displayCompare(id: string, mode: string) {
+    this.spinnerService.show();
     this.currentShowingID = id;
     this.config = (await this.configService.getServiceConfig().toPromise())[this.currentShowingID];
     this.mode = mode;
 
-    this.compareService.getServiceCompare(id).subscribe((compare) => {
-      this.compare = compare;
-      this.filterPosts();
-    });
+    this.compare = await this.compareService.getServiceCompare(id).toPromise();
+    this.filterPosts();
+
+    this.spinnerService.hide();
   }
 
   async startImport(post: PostInfo) {
     if ("token" in this.authToken) {
       try {
+        this.spinnerService.show();
         const convertedDocument = await this.convertSerivce.convertPost(post.id, this.currentShowingID);
         console.log(convertedDocument);
         const config = await this.configService.getServiceConfig().toPromise();
@@ -75,40 +79,64 @@ export class CompareComponent implements OnInit {
         const derivateID = derivateAPIURL.substr(derivateAPIURL.lastIndexOf("/")+1);
 
         await this.importService.importPDF(repositoryURL, objectID, derivateID, pdf.fileName, pdf.blob, this.authToken.token);
+        this.spinnerService.hide();
         this.messageService.push({
           message: "Der Blog-Eintrag wurde Erfolgreich importiert!",
           title: "Import Erfolgreich!",
           color: Color.success
         });
       } catch (e) {
+        this.spinnerService.hide();
         if ("message" in e) {
           this.messageService.push({message: e.message, title: "Fehler!", color: Color.danger});
         } else {
           this.messageService.push({message: e.toString(), title: "Fehler!", color: Color.danger});
         }
+        throw e;
       }
+    }
+  }
+
+  async downloadPDF(post: PostInfo) {
+    try {
+      this.spinnerService.show();
+      const config = await this.configService.getServiceConfig().toPromise();
+      const pdf = await this.convertSerivce.convertPDF(post.id, this.currentShowingID);
+      const objectURL = URL.createObjectURL(pdf.blob);
+      let link = document.createElement('a');
+      link.setAttribute("href", objectURL);
+      link.setAttribute("download", pdf.fileName);
+      document.body.appendChild(link);
+      link.dispatchEvent(new MouseEvent('click', {bubbles : true, cancelable : true, view : window}));
+      link.remove();
+    } finally {
+      this.spinnerService.hide();
     }
   }
 
   async updatePDF(post: PostInfo, objectID: string) {
     if ("token" in this.authToken) {
       try {
+        this.spinnerService.show();
         const config = await this.configService.getServiceConfig().toPromise();
         const repositoryURL = config[this.currentShowingID].repository;
         const pdf = await this.convertSerivce.convertPDF(post.id, this.currentShowingID);
         const derivateID = await this.importService.getDerivateID(repositoryURL, objectID, this.authToken.token);
         await this.importService.importPDF(repositoryURL, objectID, derivateID, pdf.fileName, pdf.blob, this.authToken.token);
+        this.spinnerService.hide();
         this.messageService.push({
           message: "Das PDF wurde Erfolgreich geupdated!",
           title: "Update Erfolgreich!",
           color: Color.success
         });
       } catch (e) {
+        this.spinnerService.hide();
         if ("message" in e) {
           this.messageService.push({message: e.message, title: "Fehler!", color: Color.danger});
         } else {
           this.messageService.push({message: e.toString(), title: "Fehler!", color: Color.danger});
         }
+        throw e;
       }
     }
   }

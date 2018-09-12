@@ -14,14 +14,20 @@
   <li *ngFor="let arr of postMyCoReKeys"  class="list-group-item">
     <a href="{{arr[1].url}}" target="_blank" [innerHTML]="arr[1].title"></a> ->
     <a href="{{config.repository+'receive/'+arr[0]}}" target="_blank" [innerHTML]="arr[0]"></a>
-    <button *ngIf="authToken.token" (click)='updatePDF(arr[1], arr[0])' class="btn btn-primary float-right">update PDF</button>
+    <div class="btn-group float-right" role="group">
+      <button (click)='downloadPDF(arr[1])' class="btn btn-primary float-right">Download</button>
+      <button *ngIf="authToken.token" (click)='updatePDF(arr[1], arr[0])' class="btn btn-primary float-right">Update</button>
+    </div>
   </li>
 </ul>
 <ul *ngIf="mode=='import'" class="list-group" style="margin-top: 10px">
   <li *ngFor="let post of this.notImported" class="list-group-item">
     <a href="{{post.url}}" target="_blank" [innerHTML]="post.title"></a>
-
-    <button *ngIf="authToken.token && !post.importedURL" (click)='startImport(post)' class="btn btn-primary float-right">Importieren</button>
+    <div class="btn-group float-right" role="group">
+      <button (click)='downloadPDF(post)' class="btn btn-primary">Download</button>
+      <button *ngIf="authToken.token && !post.importedURL" (click)='startImport(post)' class="btn btn-primary">Import</button>
+    </div>
     <a *ngIf="post.importedURL" target="_blank" href="{{post.importedURL}}" class="float-right">{{post.importedURL}}</a>
   </li>
 </ul>
+

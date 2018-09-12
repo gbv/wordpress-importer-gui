@@ -10,6 +10,7 @@ import { LoginComponent } from './login/login.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MessageComponent} from './message/message.component';
 import {ModalModule} from 'ngx-bootstrap';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 const routes: Routes = [
   {path: '', redirectTo: 'overview', pathMatch: 'full'},
@@ -26,7 +27,7 @@ const routes: Routes = [
     MessageComponent
   ],
   imports: [
-    BrowserModule, HttpClientModule, RouterModule.forRoot(routes, {useHash: true}), ModalModule.forRoot(), FormsModule, ReactiveFormsModule
+    BrowserModule, HttpClientModule, RouterModule.forRoot(routes, {useHash: true}), ModalModule.forRoot(), FormsModule, ReactiveFormsModule, NgxSpinnerModule
 
   ],
   providers: [],

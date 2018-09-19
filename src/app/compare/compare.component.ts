@@ -33,7 +33,7 @@ export class CompareComponent implements OnInit {
 
   private notImported: PostInfo[];
   private postMyCoReKeys = [];
-  private warnings: { url: string, warning: string }[] = [];
+  public warnings: { url: string, warning: string }[] = [];
 
 
   constructor(private route: ActivatedRoute,

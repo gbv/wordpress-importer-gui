@@ -15,5 +15,9 @@ export class CompareService {
   getServiceCompare(id: string): Observable<ImporterCompare> {
     return this.http.get<ImporterCompare>(environment.endpoint + "compare/" + id);
   }
+
+  revalidate(id: string, object: string): Promise<{}> {
+    return this.http.get<{}>(environment.endpoint + "revalidate/" + id + "/" + object).toPromise();
+  }
 }
 

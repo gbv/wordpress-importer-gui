@@ -18,7 +18,11 @@ export class CompareComponent implements OnInit {
   public mode: string;
 
 
-  private compare: ImporterCompare = {notImportedPosts: (<PostInfo[]>[]), mycoreIDPostMap: {}};
+  private compare: ImporterCompare = {
+    notImportedPosts: (<PostInfo[]>[]),
+    mycoreIDPostMap: {},
+    mycoreIDValidationMap: {}
+  };
 
   currentShowingID: string;
   authToken: { token: string } = {token: null};
@@ -29,6 +33,7 @@ export class CompareComponent implements OnInit {
 
   private notImported: PostInfo[];
   private postMyCoReKeys = [];
+  private warnings: { url: string, warning: string }[] = [];
 
 
   constructor(private route: ActivatedRoute,
@@ -79,6 +84,7 @@ export class CompareComponent implements OnInit {
         const derivateID = derivateAPIURL.substr(derivateAPIURL.lastIndexOf("/")+1);
 
         await this.importService.importPDF(repositoryURL, objectID, derivateID, pdf.fileName, pdf.blob, this.authToken.token);
+        await this.compareService.revalidate(this.currentShowingID, objectID);
         this.spinnerService.hide();
         this.messageService.push({
           message: "Der Blog-Eintrag wurde Erfolgreich importiert!",
@@ -143,6 +149,12 @@ export class CompareComponent implements OnInit {
 
   filterPosts() {
     const value = <string>this.name.value;
+    if (this.compare.mycoreIDValidationMap != null) {
+      this.warnings = Object.keys(this.compare.mycoreIDValidationMap).map(key => {
+        const objectURL = this.config.repository + "receive/" + key;
+        return {url: objectURL, warning: this.compare.mycoreIDValidationMap[key]};
+      });
+    }
     if (value != null && value.trim().length > 0) {
       const titleFilter = (post) => post.title.toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) != -1;
       this.notImported = this.compare.notImportedPosts.filter(titleFilter);

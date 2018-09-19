@@ -10,6 +10,11 @@
     </div>
   </form>
 </div>
+<ul *ngIf="warnings.length>0" class="list-group" style="margin-top: 10px">
+  <li *ngFor="let warn of warnings"  class="list-group-item list-group-item-danger">
+    <a href="{{warn.url}}">{{warn.url}}</a> {{warn.warning}}
+  </li>
+</ul>
 <ul *ngIf="mode=='update'" class="list-group" style="margin-top: 10px">
   <li *ngFor="let arr of postMyCoReKeys"  class="list-group-item">
     <a href="{{arr[1].url}}" target="_blank" [innerHTML]="arr[1].title"></a> ->

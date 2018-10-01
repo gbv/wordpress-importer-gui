@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
 
   private static LOGIN_PATH = "api/v1/auth/login";
 
-  private login: FormGroup;
+  public login: FormGroup;
   private userName: FormControl;
   private password: FormControl;
 

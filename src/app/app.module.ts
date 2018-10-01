@@ -11,11 +11,13 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MessageComponent} from './message/message.component';
 import {ModalModule} from 'ngx-bootstrap';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { TokenComponent } from './token/token.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'overview', pathMatch: 'full'},
   {path: 'overview', component: OverviewComponent},
-  {path: 'compare/:id/:mode', component: CompareComponent}
+  {path: 'compare/:id/:mode', component: CompareComponent},
+  {path: 'token/:id/:token', component: TokenComponent}
 ];
 
 @NgModule({
@@ -24,7 +26,8 @@ const routes: Routes = [
     OverviewComponent,
     CompareComponent,
     LoginComponent,
-    MessageComponent
+    MessageComponent,
+    TokenComponent
   ],
   imports: [
     BrowserModule, HttpClientModule, RouterModule.forRoot(routes, {useHash: true}), ModalModule.forRoot(), FormsModule, ReactiveFormsModule, NgxSpinnerModule

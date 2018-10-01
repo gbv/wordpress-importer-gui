@@ -7,6 +7,8 @@ import {ImportService} from "../import.service";
 import {Color, MessageService} from "../message.service";
 import {FormControl, FormGroup} from "@angular/forms";
 import {NgxSpinnerService} from "ngx-spinner";
+import {TokenService} from "../token.service";
+import {Observable} from "rxjs/internal/Observable";
 
 @Component({
   selector: 'app-compare',
@@ -42,7 +44,8 @@ export class CompareComponent implements OnInit {
               private importService: ImportService,
               private configService: ConfigService,
               private messageService: MessageService,
-              private spinnerService: NgxSpinnerService) {
+              private spinnerService: NgxSpinnerService,
+              private tokenService: TokenService) {
     this.route.params.subscribe(params => this.displayCompare(params["id"], params["mode"]));
   }
 
@@ -55,6 +58,10 @@ export class CompareComponent implements OnInit {
   }
 
   async displayCompare(id: string, mode: string) {
+    this.tokenService.getToken(id).subscribe(next=>{
+      this.authToken = next;
+      console.log(next);
+    });
     this.spinnerService.show();
     this.currentShowingID = id;
     this.config = (await this.configService.getServiceConfig().toPromise())[this.currentShowingID];
@@ -67,7 +74,7 @@ export class CompareComponent implements OnInit {
   }
 
   async startImport(post: PostInfo) {
-    if ("token" in this.authToken) {
+    if ("token" in this.authToken && this.authToken!=null) {
       try {
         this.spinnerService.show();
         const convertedDocument = await this.convertSerivce.convertPost(post.id, this.currentShowingID);
@@ -121,7 +128,7 @@ export class CompareComponent implements OnInit {
   }
 
   async updatePDF(post: PostInfo, objectID: string) {
-    if ("token" in this.authToken) {
+    if ("token" in this.authToken && this.authToken!=null) {
       try {
         this.spinnerService.show();
         const config = await this.configService.getServiceConfig().toPromise();

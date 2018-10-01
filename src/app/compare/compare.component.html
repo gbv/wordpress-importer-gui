@@ -1,4 +1,4 @@
-<app-login [configId]="currentShowingID" [auth]="authToken"></app-login>
+<app-login *ngIf="this.authToken.token == null;" [configId]="currentShowingID"></app-login>
 <div class="card">
   <form [formGroup]="filter">
     <div class="card-body">

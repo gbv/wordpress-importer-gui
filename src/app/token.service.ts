@@ -52,7 +52,7 @@ export class TokenService {
           if (keyAge < TokenService.TOKEN_VALIDITY_TIME) {
             const validityTime = TokenService.TOKEN_VALIDITY_TIME - keyAge;
             let token = {token: key};
-            window.setTimeout(() => tokenSubject.next({token: null}), keyAge);
+            window.setTimeout(() => tokenSubject.next({token: null}), validityTime);
             window.setTimeout(()=>tokenSubject.next(token), 100);
           }
         }

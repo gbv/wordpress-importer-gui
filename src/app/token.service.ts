@@ -14,6 +14,8 @@ export class TokenService {
   private static TOKEN_VALIDITY_TIME = 1024 * 60 * 10;
   private subjectMap: {} = {};
 
+  private timeoutId = null;
+
   constructor() {
   }
 
@@ -28,8 +30,16 @@ export class TokenService {
       }
       const tokenSubject = this.subjectMap[repository];
       tokenSubject.next({token: token});
-      window.setTimeout(() => tokenSubject.next({token: null}), TokenService.TOKEN_VALIDITY_TIME);
+      this.clearExistingTimeout();
+      this.timeoutId = window.setTimeout(() => tokenSubject.next({token: null}), TokenService.TOKEN_VALIDITY_TIME);
 
+    }
+  }
+
+  private clearExistingTimeout() {
+    if (this.timeoutId != null) {
+      window.clearTimeout(this.timeoutId);
+      this.timeoutId = null;
     }
   }
 
@@ -52,7 +62,9 @@ export class TokenService {
           if (keyAge < TokenService.TOKEN_VALIDITY_TIME) {
             const validityTime = TokenService.TOKEN_VALIDITY_TIME - keyAge;
             let token = {token: key};
-            window.setTimeout(() => tokenSubject.next({token: null}), validityTime);
+
+            this.clearExistingTimeout();
+            this.timeoutId = window.setTimeout(() => tokenSubject.next({token: null}), validityTime);
             window.setTimeout(()=>tokenSubject.next(token), 100);
           }
         }

@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {Md5Service} from "./md5.service";
+import {TokenService} from "./token.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImportService {
 
-  constructor(private http: HttpClient, private md5: Md5Service) {
+  constructor(private http: HttpClient, private md5: Md5Service, private tokenService:TokenService) {
 
   }
 
@@ -25,8 +26,14 @@ export class ImportService {
       observe : 'response', responseType : 'text'
     }).toPromise();
     const location = response.headers.get("Location");
+    this.updateToken(response, repository);
     console.log("Location " + location);
     return location;
+  }
+
+  private updateToken(response, repository: string) {
+    const newToken = response.headers.get("Authorization");
+    this.tokenService.setToken(repository, newToken);
   }
 
   async importDerivate(repository: string, parentID: string, authorization: string): Promise<string> {
@@ -42,6 +49,8 @@ export class ImportService {
       },
       observe: 'response', responseType: 'text'
     }).toPromise();
+
+    this.updateToken(response, repository);
 
     return response.headers.get("Location");
   }
@@ -81,7 +90,7 @@ export class ImportService {
       },
       observe: 'response', responseType: 'text'
     }).toPromise();
-
+    this.updateToken(response, repository);
     return response.headers.get("Location");
   }
 }

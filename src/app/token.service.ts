@@ -17,16 +17,16 @@ export class TokenService {
   constructor() {
   }
 
-  public setToken(configId: string, token: string) {
+  public setToken(repository: string, token: string) {
     if ("localStorage" in window) {
 
-      window.localStorage.setItem(TokenService.KEY_TOKEN + "_" + configId, token);
-      window.localStorage.setItem(TokenService.KEY_TOKEN_EXPIRE + "_" + configId, new Date().valueOf().toString(10));
+      window.localStorage.setItem(TokenService.KEY_TOKEN + "_" + repository, token);
+      window.localStorage.setItem(TokenService.KEY_TOKEN_EXPIRE + "_" + repository, new Date().valueOf().toString(10));
 
-      if (!(configId in this.subjectMap)) {
-        this.subjectMap[configId] = new Subject();
+      if (!(repository in this.subjectMap)) {
+        this.subjectMap[repository] = new Subject();
       }
-      const tokenSubject = this.subjectMap[configId];
+      const tokenSubject = this.subjectMap[repository];
       tokenSubject.next({token: token});
       window.setTimeout(() => tokenSubject.next({token: null}), TokenService.TOKEN_VALIDITY_TIME);
 

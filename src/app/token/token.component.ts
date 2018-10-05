@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {TokenService} from "../token.service";
+import {ConfigService} from "../config.service";
 
 @Component({
   selector: 'app-token',
@@ -9,11 +10,13 @@ import {TokenService} from "../token.service";
 })
 export class TokenComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private router: Router, private tokenService: TokenService) {
+  constructor(private route: ActivatedRoute, private router: Router, private tokenService: TokenService, private configService:ConfigService) {
     this.route.params.subscribe(params => {
       const {id, token} = params;
-      tokenService.setToken(id, token);
-      this.router.navigate(['/compare/', id, 'import']);
+      configService.getServiceConfig().toPromise().then((config)=>{
+        tokenService.setToken( config[id].repository, token);
+        this.router.navigate(['/compare/', id, 'import']);
+      });
     });
   }
 

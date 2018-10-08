@@ -43,17 +43,17 @@ export class TokenService {
     }
   }
 
-  public getToken(configId: string) {
-    if (!(configId in this.subjectMap)) {
-      this.subjectMap[configId] = new Subject();
+  public getToken(repository: string) {
+    if (!(repository in this.subjectMap)) {
+      this.subjectMap[repository] = new Subject();
     }
 
-    const tokenSubject = this.subjectMap[configId];
+    const tokenSubject = this.subjectMap[repository];
     if ("localStorage" in window) {
       const storage = window.localStorage;
 
-      const key = storage.getItem(TokenService.KEY_TOKEN + "_" + configId);
-      const keyExpire = storage.getItem(TokenService.KEY_TOKEN_EXPIRE + "_" + configId);
+      const key = storage.getItem(TokenService.KEY_TOKEN + "_" + repository);
+      const keyExpire = storage.getItem(TokenService.KEY_TOKEN_EXPIRE + "_" + repository);
 
       if (key != null && keyExpire != null) {
         let dateNumber: number;

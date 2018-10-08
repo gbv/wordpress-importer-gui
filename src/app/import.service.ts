@@ -33,7 +33,9 @@ export class ImportService {
 
   private updateToken(response, repository: string) {
     const newToken = response.headers.get("Authorization");
-    this.tokenService.setToken(repository, newToken);
+    if (newToken != null) {
+      this.tokenService.setToken(repository, newToken);
+    }
   }
 
   async importDerivate(repository: string, parentID: string, authorization: string): Promise<string> {

@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit {
       const authResponse = await this.http.get<AuthResponse>(repository + LoginComponent.LOGIN_PATH, options).toPromise();
       if(authResponse.login_success){
         const token = authResponse.token_type + " " + authResponse.access_token;
-        this.tokenService.setToken(this.configId, token);
+        this.tokenService.setToken(repository, token);
       } else {
         this.messageService.push({
           title: "Login Fehlgeschlagen!",

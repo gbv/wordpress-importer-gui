@@ -58,18 +58,15 @@ export class CompareComponent implements OnInit {
   }
 
   async displayCompare(id: string, mode: string) {
-    this.tokenService.getToken(id).subscribe(next=>{
-      this.authToken = next;
-      console.log(next);
-    });
     this.spinnerService.show();
     this.currentShowingID = id;
-    this.config = (await this.configService.getServiceConfig().toPromise())[this.currentShowingID];
     this.mode = mode;
-
+    this.config = (await this.configService.getServiceConfig().toPromise())[id];
+    this.tokenService.getToken(this.config.repository).subscribe(next=>{
+      this.authToken = next;
+    });
     this.compare = await this.compareService.getServiceCompare(id).toPromise();
     this.filterPosts();
-
     this.spinnerService.hide();
   }
 

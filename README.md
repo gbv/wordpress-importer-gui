@@ -1,6 +1,6 @@
 # WordpressImporterGUI
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8. It needs the [WordpressImporterService](https://github.com/gbv/wordpress-importer-service) as backend. It shows you the import state of all blog articles. If not imported you can trigger single blog imports. There is also an option to save an article as PDF.
 
 ## Development server
 
